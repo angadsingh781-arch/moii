@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For Moi 💘</title>
+  <style>
+    :root{
+      --pink:#ff4da6;
+      --text:#ffe9f4;
+      --muted: rgba(255,233,244,0.75);
+      --card: rgba(26,13,31,0.76);
+      --shadow: 0 18px 60px rgba(0,0,0,0.55);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      overflow:hidden;
+      background:
+        radial-gradient(1100px 800px at 20% 10%, rgba(255,77,166,0.35), transparent 60%),
+        radial-gradient(900px 700px at 85% 90%, rgba(255,179,217,0.22), transparent 60%),
+        linear-gradient(160deg, #0b0610 0%, #15071a 55%, #0a0610 100%);
+    }
+
+    .screen{
+      position:absolute; inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .hidden{
+      opacity:0;
+      transform: scale(1.03);
+      pointer-events:none;
+    }
+
+    .card{
+      width:min(520px,92vw);
+      background: var(--card);
+      border-radius: 28px;
+      padding: 26px 22px;
+      box-shadow: var(--shadow);
+      text-align:center;
+      backdrop-filter: blur(10px);
+    }
+
+    h1{
+      margin:10px 0;
+      font-size:clamp(28px,5vw,40px);
+    }
+    .sub{
+      color:var(--muted);
+      font-size:15px;
+      margin-bottom:18px;
+    }
+
+    input{
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:none;
+      font-size:16px;
+      text-align:center;
+      outline:none;
+    }
+
+    .btn{
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      border:none;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:800;
+      background: linear-gradient(180deg,#ff5fb1,#ff2f93);
+      color:#14000d;
+      width:100%;
+    }
+
+    .error{
+      display:none;
+      margin-top:10px;
+      color:#ff8fc6;
+      font-size:14px;
+    }
+
+    .heart{
+      display:inline-block;
+      animation: pop 1.2s infinite;
+    }
+    @keyframes pop{50%{transform:scale(1.12)}}
+
+    .stage{
+      position:relative;
+      height:190px;
+      margin-top:10px;
+    }
+
+    .vbtn{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      padding:14px 18px;
+      border-radius:14px;
+      border:none;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .yes{
+      top:22px;
+      background: linear-gradient(180deg,#ff5fb1,#ff2f93);
+      color:#14000d;
+    }
+
+    .no{
+      top:92px;
+      background: rgba(255,233,244,0.12);
+      color:#ffe9f4;
+      border:1px solid rgba(255,233,244,0.25);
+    }
+
+    .success{
+      display:none;
+      margin-top:14px;
+      padding:14px;
+      border-radius:18px;
+      background: rgba(255,77,166,0.12);
+    }
+
+    .float{
+      position:absolute;
+      bottom:-30px;
+      animation: rise 2s ease forwards;
+      pointer-events:none;
+    }
+    @keyframes rise{
+      to{transform:translateY(-110vh);opacity:0;}
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOCK SCREEN -->
+<section class="screen" id="lockScreen">
+  <div class="card">
+    <h1>Enter the code</h1>
+    <p class="sub">
+      Our first date.<br>
+      Format: <b>DD.MM.YY</b>
+    </p>
+    <input id="codeInput" placeholder="DD.MM.YY" />
+    <button class="btn" id="unlockBtn">Unlock</button>
+    <div class="error" id="errorText">Wrong.</div>
+  </div>
+</section>
+
+<!-- VALENTINE SCREEN -->
+<section class="screen hidden" id="valScreen">
+  <div class="card">
+    <h1>Moi, will you be my Valentine <span class="heart">💘</span></h1>
+
+    <div class="stage" id="stage">
+      <button class="vbtn yes" id="yesBtn">Yes 😌</button>
+      <button class="vbtn no" id="noBtn">No 🙃</button>
+    </div>
+
+    <div class="success" id="success">
+      <h2>YES 😳💖</h2>
+      <p>Now you’re stuck with me. 😏</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const SECRET_CODE = "16.01.26";
+
+  const lockScreen = document.getElementById("lockScreen");
+  const valScreen = document.getElementById("valScreen");
+  const codeInput = document.getElementById("codeInput");
+  const unlockBtn = document.getElementById("unlockBtn");
+  const errorText = document.getElementById("errorText");
+
+  function unlock(){
+    if(codeInput.value.trim() === SECRET_CODE){
+      errorText.style.display="none";
+      lockScreen.classList.add("hidden");
+      valScreen.classList.remove("hidden");
+      placeNo();
+    } else {
+      errorText.style.display="block";
+    }
+  }
+
+  unlockBtn.onclick = unlock;
+  codeInput.onkeydown = e => { if(e.key==="Enter") unlock(); };
+
+  const stage = document.getElementById("stage");
+  const noBtn = document.getElementById("noBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const success = document.getElementById("success");
+
+  function placeNo(){
+    const r = stage.getBoundingClientRect();
+    noBtn.style.left = (r.width*0.6)+"px";
+    noBtn.style.top = (r.height*0.6)+"px";
+    noBtn.style.transform="none";
+  }
+
+  function moveNo(){
+    const r = stage.getBoundingClientRect();
+    noBtn.style.left = Math.random()*(r.width-80)+"px";
+    noBtn.style.top = Math.random()*(r.height-80)+"px";
+  }
+
+  noBtn.onmouseenter = moveNo;
+  noBtn.onclick = moveNo;
+
+  yesBtn.onclick = ()=>{
+    success.style.display="block";
+    yesBtn.disabled=true;
+    noBtn.disabled=true;
+    for(let i=0;i<14;i++){
+      const h=document.createElement("div");
+      h.className="float";
+      h.textContent="💖";
+      h.style.left=Math.random()*100+"vw";
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),2500);
+    }
+  };
+</script>
+
+</body>
+</html>
